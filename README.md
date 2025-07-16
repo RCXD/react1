@@ -11,3 +11,8 @@ Change versions: in "dependencies", ```react=19.1.0``` and ```react-dom=19.1.0``
 9. press **Ctrl+\`** (backtick) then a command prompt opens
 10. type ```npm install``` (make sure you reached the correct ```react``` directory)
 11. type ```npm run dev``` to begin
+
+If you cloned this project, do as follows;
+1. Open VSC
+2. Open the folder where the project exists then open a command prompt, ```Ctrl+backtick```
+3. type ```npm install```
