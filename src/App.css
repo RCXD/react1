@@ -2,6 +2,13 @@
   margin: 0;
   padding: 0;
   box-sizing: border-box;
+  /* transition: all 0.5s; */
+  z-index:10;
+  /* overflow:hidden; */
+}
+
+body{
+  width:100vw;
 }
 
 nav{
@@ -13,8 +20,52 @@ nav{
 .list{
   padding-left: 20px;
   border-bottom: 1px solid lightgrey;
+  display:flex;
+  flex-direction: row;
+  width:100vw;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+}
+.list>h4{
+  width:70%;
+}
+.list>p{
+  width: 100px;
+  /* margin-top: 15px; */
+}
+.list .erase{
+  width:40px;
+  background-color: white;
+  border-radius: 5px;
+}
+.list .modify{
+  width:40px;
+  background-color: white;
+  border-radius: 5px;
+}
+.list>div{
+  width:50px;
+  text-align: end;
+  /* margin-right: 20px; */
+}
+.editorWriter .editor>textarea{
+  border: 1px solid red;
+}
+.writer .editor>textarea{
+  border: 1px solid blue;
 }
 
-.list>h4, .list>p{
-  margin-top: 15px;
+.hidden{
+  overflow:hidden;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease-out;
+  transform-origin:top;
+}
+
+.revealed{
+  overflow:hidden;
+  transform: translateY(0);
+  transition: transform 0.5s ease-in;
+  transform-origin:top;
 }

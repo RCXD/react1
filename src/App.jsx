@@ -3,140 +3,170 @@ import reactLogo from './assets/react.svg'
 import viteLogo from '/vite.svg'
 import './App.css'
 import Detail from './Detail.jsx'
+import Editor from './Editor.jsx'
+import { flushSync } from 'react-dom'
 
 // let i=0
 function App() {
   //state 선언 방법. use****같은 react hook (react 내장 함수)들이 많이 있다.
   // const [변수명, 변경함수]=useState(초기값);
-  const [title, setTitle] = useState('상품목록')
-  const [boardTitle, setBoardTitle] = useState(['React', 'HTML', 'CSS'])
-  const [boardContent, setBoardContent] = useState(['React is...', 'HTML is...', 'CSS is...'])
-  const [like, setLike] = useState([0, 0, 0])
-  const [show, setShow] = useState(false)
-  const [titleIdx, setTitleIdx]=useState(0)
-  const [newTitle, setNewTitle]=useState('')
-  const [newContent, setNewContent]=useState('')
-  //위 변수들을 객체로 만들어서 개선
+  const [board, setBoard] = useState([
+    {
+      title: 'React',
+      date: '2025-07-16',
+      content: 'React is...',
+      likes: 0,
+    },
+    {
+      title: 'HTML',
+      date: '2025-07-16',
+      content: 'HTML is...',
+      likes: 10,
+    },
+    {
+      title: 'CSS',
+      date: '2025-07-16',
+      content: 'CSS is...',
+      likes: 100,
+    },
+  ])
+  const [showDetail, setShowDetail] = useState([false, false, false])
+  const [showEditor, setShowEditor] = useState([false, false, false])
+  const [showWriter, setShowWriter] = useState(false)
+  const [boardIdx, setBoardIdx] = useState(0)
+  const [newBoard, setNewBoard] = useState({
+    title: '',
+    date: '',
+    content: '',
+    likes: '',
+  })
+  const [ishidden, setIshidden] = useState(true) //ref로 해야하나?
 
-  function showContent(idx){
-    setShow(!show);
-    setTitleIdx(idx)
+  function resetFlags(arrayFlags){
+    let flags=[...arrayFlags] //will be deprecated if works without it
+    flags.map((_, i)=>{
+      flags[i]=false
+    })
+    return flags
   }
-  // function changeHandler() {
-  //   setLike(like + 1)
-  // }
-  function test(){
-    console.log('test')
+  function switchFlags(arrayFlags, idx){
+    let flags=[...arrayFlags] //will be deprecated if works without it
+    let isAnyOpen=false
+    flags.map((_, i)=>{
+      isAnyOpen|=flags[i]
+      flags[i]=false //reset the original
+    })
+    if(!isAnyOpen){
+      flags[idx]=true
+    }
+    return flags
   }
-  // let title=`게시판` //서버에서 가져온 값으로 가정
+
   return (
     <div className='App'>
       <nav>
-        <h3 className={title}>{title}</h3>
+        <h3 className="게시판">게시판</h3>
       </nav>
-      <button onClick={() => {
-        setTitle('게시판')
-      }}>제목 바꾸기</button>
-
       {
-       //블럭문
-        //배열을 map하면 값,인덱스 순으로 매개변수를 받을 수 있다...
-        boardTitle.map((title, i) => {
-          {/* console.log('??', title, i) */}
+        board.map((_, i) => {
           return (
-            <div className="list" key={i}>
-            {/* key 속성은 React에서 반복되는 태그를 구분해줄 방법으로 이용한다. 
-            이 부분이 없으면 에러가 나고 실행되지 않는다고 함.*/}
-              <h4 onClick={() => {
-                showContent(i)
-              }}>{title}<button onClick={(e) => {
-                //이벤트 객체를 받을 수 있다.
-                e.stopPropagation()
-                //버블링 차단
-                // let _like = [...like]
-                // _like[i] = _like[i] + 1
-                // setLike(_like)
-                setLike([...like.slice(0, i), like[i]+1, ...like.slice(i+1)])
-              }}>좋아요</button> {like[i]} </h4>
-              <p>2025-07-16</p>
-              <button onClick={()=>{
-                boardTitle.splice(i, 1)
-                boardContent.splice(i, 1)
-                like.splice(i, 1)
-                setBoardTitle([...boardTitle])
-                setLike([...like])
-              }}>삭제</button>
+            <div key={i}>
+              <div className="list">
+                <h4 onClick={() => {
+                  setIshidden(!ishidden)
+                  setShowWriter(false)
+                  let sflags=switchFlags(showDetail, i)
+                  setShowDetail(sflags)
+                  let rflags=resetFlags(showEditor)
+                  setShowEditor(rflags)
+                  setBoardIdx(i)
+                }}>{board[i].title}</h4>
+                <div className='like'>
+                  <button onClick={(e) => {
+                    e.stopPropagation()
+                    board[i].likes += 1
+                    setBoard([...board])
+                  }}>{board[i].likes}👍</button>
+                </div>
+                <p>2025-07-16</p>
+                <button className="modify" onClick={() => {
+                  setIshidden(!ishidden)
+                  setBoardIdx(i)
+                  setShowWriter(false)
+                  let rflags=resetFlags(showDetail)
+                  setShowDetail(rflags)
+                  let sflags=switchFlags(showEditor, i)
+                  // console.log(i)
+                  setShowDetail(sflags)
+                  setShowEditor(sflags)
+                  newBoard.title=board[i].title
+                  newBoard.content=board[i].content
+                }}>수정</button>
+                <button className="erase" onClick={() => {
+                  // setBoardIdx(i)
+                  board.splice(i, 1)
+                  setShowWriter(false)
+                  let rflags=resetFlags(showDetail)
+                  setShowDetail(rflags)
+                  setShowEditor(rflags)
+                  setBoard([...board])
+                  setIshidden(true)
+                }}>삭제</button>
+              </div>
+              <div className='editorWriter'>
+                {showDetail[i] ? <Detail
+                  boardIdx={boardIdx}
+                  board={board}
+                  ishidden={ishidden}
+                /> : null}
+                {showEditor[i] ? <Editor
+                  board={board}
+                  setBoard={setBoard}
+                  boardIdx={boardIdx}
+                  newBoard={newBoard}
+                  setNewBoard={setNewBoard}
+                  ishidden={ishidden}
+                  setIshidden={setIshidden}
+                /> : null}
+              </div>
             </div>
           )
         })
       }
-
-      {/* <button onClick={() => {
-        setBoardTitle(['Java', ...boardTitle.slice(1)])
-      }}>첫번째 게시물 제목 바꾸기</button> */}
-      {/* <Detail 변수명=보낼값 /> 이렇게 자식으로 데이터를 보낼 수 있다. */}
-      {/* {<Detail num={1}/>} */}
-      
-      {/* 컴포넌트 태그를 사용하면 부모자식관계 성립 */}
-      {show ? <Detail
-        boardTitle={boardTitle} 
-        setBoardTitle={setBoardTitle}
-        titleIdx={titleIdx} 
-        color="grey"
-        like={like}
-        test={test}
-        boardContent={boardContent}
-      /> : null} 
-      {/* {show && <Detail />} */}
-      <br/>
-      {/* 쓰자마자 반영되게 하고싶으면 onInput. 다 쓰고 포커스를 텍스트박스 밖으로 뺄 떼는 onChange */}
-      {/* 아래는 되긴 되는데 다소 불편하네
-      <input type='text' onFocus={(e)=>{
-        e.target.value=''
-      }} onBlur={(e)=>{
-        console.log(e.target.value)
-        setNewTitle(e.target.value)
-      }}/><br/>
-      <textarea></textarea><br/>
-      <button onClick={()=>{
-        if (newTitle===''){
-          alert('제목을 입력하세요.')
-          return
+      {!showWriter?
+      <button onClick={(e)=>{
+        setIshidden(!ishidden)
+        let rflags=resetFlags(showEditor)
+        setShowDetail(rflags)
+        setShowEditor(rflags)
+        setShowWriter(true)
+        setNewBoard({
+          title:'',
+          date:'',
+          content:'',
+          likes:0,
+        })
+      }}>게시글 작성하기*</button>
+      :''
+      }
+      <div className='writer'>
+        {showWriter?
+          <Editor 
+            board={board}
+            setBoard={setBoard}
+            boardIdx={boardIdx}
+            newBoard={newBoard}
+            setNewBoard={setNewBoard}
+            ishidden={ishidden}
+            setIshidden={setIshidden}
+          />:''
         }
-        // boardTitle.unshift(newTitle) //앞에 추가
-        // like.unshift(0)
-        boardTitle.push(newTitle) //뒤에 추가
-        like.push(0)
-        setLike([...like])
-        setBoardTitle([...boardTitle])
-        setNewTitle('')
-      }}>글작성</button> */}
-      <input type='text' value={newTitle} onChange={(e)=>{
-        setNewTitle(e.target.value)
-      }}/><br/>
-      <textarea value={newContent} onChange={(e)=>{
-        setNewContent(e.target.value)
-      }}></textarea><br/>
-      <button onClick={()=>{
-        if (newTitle===''){
-          alert('제목을 입력하세요.')
-          return
+        {showWriter?
+        <button style={{display:'inline'}} onClick={()=>{
+          setShowWriter(false)
+        }}>취소</button>:''
         }
-        if (newContent===''){
-          alert ('내용을 입력하세요.')
-          return
-        }
-        // boardTitle.unshift(newTitle) //앞에 추가
-        // like.unshift(0)
-        boardTitle.push(newTitle) //뒤에 추가
-        boardContent.push(newContent)
-        like.push(0)
-        setLike([...like])
-        setBoardTitle([...boardTitle])
-        setBoardContent([...boardContent])
-        setNewTitle('')
-        setNewContent('')
-      }}>글작성</button>
+      </div>
     </div>
   )
 }
