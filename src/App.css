@@ -1,42 +1,71 @@
-#root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
-  text-align: center;
+*{
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* transition: all 0.5s; */
+  z-index:10;
+  /* overflow:hidden; */
 }
 
-.logo {
-  height: 6em;
-  padding: 1.5em;
-  will-change: filter;
-  transition: filter 300ms;
-}
-.logo:hover {
-  filter: drop-shadow(0 0 2em #646cffaa);
-}
-.logo.react:hover {
-  filter: drop-shadow(0 0 2em #61dafbaa);
+body{
+  width:100vw;
 }
 
-@keyframes logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+nav{
+  color:white;
+  background:black;
+  padding:15px;
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  a:nth-of-type(2) .logo {
-    animation: logo-spin infinite 20s linear;
-  }
+.list{
+  padding-left: 20px;
+  border-bottom: 1px solid lightgrey;
+  display:flex;
+  flex-direction: row;
+  width:100vw;
+  height: 40px;
+  align-items: center;
+  justify-content: space-between;
+}
+.list>h4{
+  width:70%;
+}
+.list>p{
+  width: 100px;
+  /* margin-top: 15px; */
+}
+.list .erase{
+  width:40px;
+  background-color: white;
+  border-radius: 5px;
+}
+.list .modify{
+  width:40px;
+  background-color: white;
+  border-radius: 5px;
+}
+.list>div{
+  width:50px;
+  text-align: end;
+  /* margin-right: 20px; */
+}
+.editorWriter .editor>textarea{
+  border: 1px solid red;
+}
+.writer .editor>textarea{
+  border: 1px solid blue;
 }
 
-.card {
-  padding: 2em;
+.hidden{
+  overflow:hidden;
+  transform: translateY(-100%);
+  transition: transform 0.5s ease-out;
+  transform-origin:top;
 }
 
-.read-the-docs {
-  color: #888;
+.revealed{
+  overflow:hidden;
+  transform: translateY(0);
+  transition: transform 0.5s ease-in;
+  transform-origin:top;
 }
